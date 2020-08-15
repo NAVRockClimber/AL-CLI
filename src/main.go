@@ -15,7 +15,8 @@ limitations under the License.
 */
 package main
 
-import "https://github.com/NAVRockClimber/AL-CLI/cmd"
+// import "https://github.com/NAVRockClimber/AL-CLI/cmd"
+import "https://github.com/NAVRockClimber/al-cli/tree/dev/cmd"
 
 func main() {
 	cmd.Execute()

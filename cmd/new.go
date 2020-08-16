@@ -16,9 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+	"al/cmd/newproject"
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/spf13/cobra"
 )
@@ -37,7 +37,7 @@ var newCmd = &cobra.Command{
 		appFolder, _ = cmd.Flags().GetString("AppFolder")
 		resourceFolder, _ = cmd.Flags().GetString("ResourceFolder")
 		testFolder, _ = cmd.Flags().GetString("TestFolder")
-		createFolderStructure(args[0], true, !noTestFlag, !noResourceFlag, appFolder, resourceFolder, testFolder)
+		newproject.CreateFolderStructure(args[0], true, !noTestFlag, !noResourceFlag, appFolder, resourceFolder, testFolder)
 	},
 }
 
@@ -64,28 +64,5 @@ func parameterCheck(cmd *cobra.Command, args []string) {
 		cmd.Help()
 		fmt.Println("New command takes exactly one parameter")
 		os.Exit(0)
-	}
-}
-
-func createFolderStructure(appName string, app, test, res bool, appFolderName, resourceFolderName, testFolderName string) {
-	var appFolder, testFolder, resFolder string
-	appFolder = path.Join(appName, appFolderName)
-	testFolder = path.Join(appName, testFolderName)
-	resFolder = path.Join(appName, resourceFolderName)
-	_, rootFolderErr := os.Stat(appName)
-	if os.IsNotExist(rootFolderErr) {
-		os.Mkdir(appName, os.ModeDir)
-	}
-	_, appErr := os.Stat(appFolder)
-	if app && os.IsNotExist(appErr) {
-		os.Mkdir(appFolder, os.ModeDir)
-	}
-	_, testErr := os.Stat(testFolder)
-	if test && os.IsNotExist(testErr) {
-		os.Mkdir(testFolder, os.ModeDir)
-	}
-	_, err := os.Stat(resFolder)
-	if res && os.IsNotExist(err) {
-		os.Mkdir(resFolder, os.ModeDir)
 	}
 }

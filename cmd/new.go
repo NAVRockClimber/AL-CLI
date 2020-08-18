@@ -29,25 +29,16 @@ var newCmd = &cobra.Command{
 	Short: "create a new AL project",
 	Long:  `Create a new al project including folder structure, manifest, compose files and git.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var noResourceFlag, noTestFlag bool
-		var appFolder, resourceFolder, testFolder string
 		parameterCheck(cmd, args)
-		noResourceFlag, _ = cmd.Flags().GetBool("NoResource")
-		noTestFlag, _ = cmd.Flags().GetBool("NoTest")
-		appFolder, _ = cmd.Flags().GetString("AppFolder")
-		resourceFolder, _ = cmd.Flags().GetString("ResourceFolder")
-		testFolder, _ = cmd.Flags().GetString("TestFolder")
-		newproject.CreateFolderStructure(args[0], true, !noTestFlag, !noResourceFlag, appFolder, resourceFolder, testFolder)
+		appFolder, _ := newproject.CreateFolderStructure(cmd, args[0])
+		newproject.CreateAppJSON(cmd, args[0], appFolder)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(newCmd)
-	newCmd.Flags().BoolP("NoResource", "r", false, "Do not create a resource folder")
-	newCmd.Flags().String("ResourceFolder", "res", "Set the name for the resource folder. Default: res")
-	newCmd.Flags().BoolP("NoTest", "t", false, "Do not create a test folder")
-	newCmd.Flags().String("TestFolder", "test", "Set the name for the test folder. Default: test")
-	newCmd.Flags().String("AppFolder", "app", "Set the name for the app folder. Default: app")
+	newproject.InitAlFolder(newCmd)
+	newproject.InitManifest(newCmd)
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

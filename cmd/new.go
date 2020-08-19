@@ -32,6 +32,7 @@ var newCmd = &cobra.Command{
 		parameterCheck(cmd, args)
 		appFolder, _ := newproject.CreateFolderStructure(cmd, args[0])
 		newproject.CreateAppJSON(cmd, args[0], appFolder)
+		newproject.CreateComposeFile(cmd, args[0])
 	},
 }
 
@@ -39,6 +40,7 @@ func init() {
 	rootCmd.AddCommand(newCmd)
 	newproject.InitAlFolder(newCmd)
 	newproject.InitManifest(newCmd)
+	newproject.InitCompose(newCmd)
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

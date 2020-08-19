@@ -17,46 +17,65 @@ import (
 
 /*InitManifest sets the flags for the manifest*/
 func InitManifest(newCmd *cobra.Command) {
+	newCmd.Flags().StringP("Version", "V", "1.0.0.0", "Set Version field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().StringP("Description", "D", "", "Set Description field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().StringP("Brief", "B", "", "Set Brief field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().String("PrivacyStatement", "", "Set PrivacyStatement field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().String("EULA", "", "Set EULA field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().String("Help", "", "Set Help field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().String("URL", "", "Set URL field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().String("Logo", "", "Set Logo field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().StringP("Platform", "P", "", "Set Platform field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().StringP("SupportedLocales", "L", "TranslationFile", "Set SupportedLocales field in app manifest. If empty the from the settings is taken.")
+	defaultFeatures := []string{"TranslationFile"}
+	newCmd.Flags().StringSliceP("Features", "F", defaultFeatures, "Set Features field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().Bool("ShowMyCode", true, "Set ShowMyCode field in app manifest. If empty the from the settings is taken.")
+	newCmd.Flags().StringP("Runtime", "R", "", "Set Runtime field in app manifest. If empty the from the settings is taken.")
 	newCmd.Flags().StringP("Publisher", "p", "", "Set company field in app manifest. If empty the default from setup is taken.")
-	newCmd.Flags().Int("FromRange", 0, "Define From field in app manifests id range")
-	newCmd.Flags().Int("ToRange", 0, "Define To field in app manifests id range")
+	defaultRange := []int{0, 0}
+	newCmd.Flags().IntSliceP("Range", "I", defaultRange, "Define From field in app manifests id range")
 }
 
 /*CreateAppJSON create a new app manifest file*/
-func CreateAppJSON(cmd *cobra.Command, appName string, appFolder string) {
+func CreateAppJSON(cmd *cobra.Command, appName string, appFolder string) appManifest {
 	appID := uuid.New().String()
 	manifest := appManifest{
 		ID:   appID,
 		Name: appName,
 	}
-	publisher, _ := cmd.Flags().GetString("Publisher")
-	if publisher == "" {
-		viper.GetString("Publisher")
-	}
-	manifest.Name = requestString("App name (%s): ", manifest.Name)
-	manifest.Publisher = publisher
-	fromRange, _ := cmd.Flags().GetInt("FromRange")
-	toRange, _ := cmd.Flags().GetInt("FromTo")
 
-	appIDRange := idRange{
-		From: fromRange,
-		To:   toRange,
-	}
+	manifest.Name = getStringValue(cmd, "Name", "App Manifest field", false)
+	manifest.Publisher = getStringValue(cmd, "Publisher", "App Manifest field", false)
+	manifest.Version = getStringValue(cmd, "Version", "App Manifest field", true)
+	manifest.Description = getStringValue(cmd, "Description", "App Manifest field", false)
+	manifest.Brief = getStringValue(cmd, "Brief", "App Manifest field", true)
+	manifest.PrivacyStatement = getStringValue(cmd, "PrivacyStatement", "App Manifest field", false)
+	manifest.EULA = getStringValue(cmd, "EULA", "App Manifest field", false)
+	manifest.Help = getStringValue(cmd, "Help", "App Manifest field", false)
+	manifest.URL = getStringValue(cmd, "URL", "App Manifest field", false)
+	manifest.Logo = getStringValue(cmd, "Logo", "App Manifest field", false)
+	manifest.Platform = getStringValue(cmd, "Platform", "App Manifest field", true)
+	manifest.Runtime = getStringValue(cmd, "Runtime", "App Manifest field", true)
 
-	if fromRange <= 0 {
-		appIDRange.From = requestInt("ID range start:")
-	}
-	if toRange <= 0 {
-		appIDRange.To = requestInt("ID range end: ")
-	}
-
-	manifest.IDRanges = append(manifest.IDRanges, appIDRange)
 	createAppJSON(appFolder, manifest)
+	return manifest
+}
+
+func getStringValue(cmd *cobra.Command, key, question string, request bool) string {
+	value, _ := cmd.Flags().GetString(key)
+	if value == "" {
+		value = viper.GetString(key)
+	}
+	if request {
+		questionWithField := question + " " + key
+		value = requestString(questionWithField, value)
+	}
+	return value
 }
 
 func requestString(question, defaultValue string) string {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf(question, defaultValue)
+	fmt.Print(question, defaultValue)
 	answer, _ := reader.ReadString('\n')
 	if answer == "\r\n" {
 		answer = defaultValue

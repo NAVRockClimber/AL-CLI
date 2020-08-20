@@ -75,11 +75,10 @@ func getStringValue(cmd *cobra.Command, key, question string, request bool) stri
 
 func requestString(question, defaultValue string) string {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(question, defaultValue)
+	fmt.Print(question, ": ["+defaultValue+"] ")
 	answer, _ := reader.ReadString('\n')
 	if answer == "\r\n" {
 		answer = defaultValue
-		fmt.Printf("Reurning:  %s", answer)
 	}
 	return answer
 }
@@ -114,10 +113,9 @@ func createAppJSON(appFolderName string, manifest appManifest) {
 	}
 	jsonFileName = filepath.Join(curpath, appFolderName, "App.json")
 	jsonManifest, _ := converToJSONString(manifest)
-	fmt.Printf("Writing manifest to: %s \n", jsonFileName)
 	ioerr := ioutil.WriteFile(jsonFileName, jsonManifest, os.ModePerm)
 	if ioerr != nil {
-		fmt.Printf("Writing manifest to: %s", ioerr.Error())
+		fmt.Print("Error writing manifest: ", ioerr.Error())
 	}
 }
 

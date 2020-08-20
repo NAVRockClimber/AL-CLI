@@ -31,7 +31,7 @@ func CreateComposeFile(cmd *cobra.Command, rootFolder string) {
 	var compose simpleCompose
 
 	compose.Version = getStringValue(cmd, "ComposeVersion", "Compose file field ", false)
-	compose.Services.BC.Image = getStringValue(cmd, "Image", "Compose file field ", false)
+	compose.Services.BC.Image = getStringValue(cmd, "Image", "Compose file field ", true)
 	compose.Services.BC.ContainerName = getStringValue(cmd, "ContainerName", "Compose file field ", false)
 	compose.Services.BC.MemLimit = getStringValue(cmd, "MemLimit", "Compose file field ", false)
 	compose.Services.BC.Environment.AcceptEula = getStringValue(cmd, "AcceptEula", "Compose file field ", false)
@@ -52,10 +52,9 @@ func createComposeFile(rootFolder string, compose simpleCompose) {
 	}
 	composeFileName = filepath.Join(curpath, rootFolder, "docker-compose.yaml")
 	jsonManifest, _ := convertToYAMLString(compose)
-	fmt.Printf("Writing manifest to: %s \n", composeFileName)
 	ioerr := ioutil.WriteFile(composeFileName, jsonManifest, os.ModePerm)
 	if ioerr != nil {
-		fmt.Printf("Writing manifest to: %s", ioerr.Error())
+		fmt.Print("Error writing compose file: ", ioerr.Error())
 	}
 }
 

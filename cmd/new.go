@@ -31,6 +31,7 @@ var newCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		parameterCheck(cmd, args)
 		appFolder, _ := newproject.CreateFolderStructure(cmd, args[0])
+		newproject.CreateGit(cmd, args[0])
 		newproject.CreateAppJSON(cmd, args[0], appFolder)
 		newproject.CreateComposeFile(cmd, args[0])
 	},
@@ -39,6 +40,7 @@ var newCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(newCmd)
 	newproject.InitAlFolder(newCmd)
+	newproject.InitGit(newCmd)
 	newproject.InitManifest(newCmd)
 	newproject.InitCompose(newCmd)
 	// Here you will define your flags and configuration settings.

@@ -12,7 +12,8 @@
             "program": "${fileDirname}",
             "env": {},
             "args": [
-                "new"
+                "new",
+                "test"
             ]
         }
     ]
